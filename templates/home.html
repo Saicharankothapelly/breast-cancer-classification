@@ -7,25 +7,64 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color:rgb(206, 161, 161);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: rgb(206, 161, 161);
             margin: 0;
+            padding: 20px;
+            line-height: 1.6;
         }
-        .container {
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        .form-container {
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            overflow-y: auto;
-            max-height: 90vh;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            display: none; /* Hide form initially */
         }
-        h2 {
+        h1, h2 {
             text-align: center;
             color: #333;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #d64161;
+            border-bottom: 2px solid #d64161;
+            padding-bottom: 10px;
+        }
+        .info-section {
+            margin-bottom: 30px;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #d64161;
+        }
+        .tumor-types {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .tumor-card {
+            flex: 1;
+            margin: 0 10px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .benign {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196F3;
+        }
+        .malignant {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
         }
         label {
             font-weight: bold;
@@ -40,119 +79,204 @@
             border-radius: 5px;
         }
         button {
-            width: 100%;
-            padding: 10px;
+            padding: 12px 20px;
             background-color: #28a745;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 15px;
+            margin: 15px 0;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .classify-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            background-color: #d64161;
+            font-size: 1.1em;
         }
         button:hover {
             background-color: #218838;
+            transform: translateY(-2px);
+        }
+        .classify-btn:hover {
+            background-color: #c13553;
+        }
+        .result {
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-    <h2>Breast Cancer Classification Form</h2>
-    <form action="{{url_for("classify")}}" method="POST">
-        <label for="radius_mean">Radius Mean:</label>
-        <input type="number" id="radius_mean" name="radius_mean" step="any" required><br><br>
+    <div class="main-container">
+        <h1>Breast Cancer Classification Tool</h1>
+        
+        <div class="info-section">
+            <h2>Understanding Breast Cancer</h2>
+            <p>Breast cancer is one of the most common cancers affecting women worldwide. It occurs when cells in the breast grow out of control, forming a tumor that can often be seen on an x-ray or felt as a lump. Early detection significantly improves treatment outcomes and survival rates.</p>
+            
+            <h3>Types of Breast Tumors</h3>
+            <div class="tumor-types">
+                <div class="tumor-card benign">
+                    <h3>Benign Tumors</h3>
+                    <p>Benign breast tumors are non-cancerous growths that do not spread to other parts of the body. They typically have these characteristics:</p>
+                    <ul>
+                        <li>Slow-growing</li>
+                        <li>Regular cell appearance</li>
+                        <li>Well-defined borders</li>
+                        <li>Do not invade surrounding tissues</li>
+                        <li>Less likely to recur after removal</li>
+                    </ul>
+                    <p>Common examples include fibroadenomas and cysts.</p>
+                </div>
+                
+                <div class="tumor-card malignant">
+                    <h3>Malignant Tumors</h3>
+                    <p>Malignant breast tumors are cancerous growths that can invade nearby tissue and spread to other parts of the body. They typically have these characteristics:</p>
+                    <ul>
+                        <li>Rapid cell division</li>
+                        <li>Irregular cell appearance</li>
+                        <li>Poorly defined borders</li>
+                        <li>Can invade surrounding tissues</li>
+                        <li>Ability to metastasize (spread) to distant areas</li>
+                    </ul>
+                    <p>Examples include ductal carcinoma and lobular carcinoma.</p>
+                </div>
+            </div>
+            
+            <p>This tool uses machine learning to analyze cell features from breast mass samples and classify tumors as either benign or malignant, helping in early detection and diagnosis.</p>
+        </div>
+        
+        <button id="open-form-btn" class="classify-btn">Classify Yours</button>
+        
+        <div class="form-container" id="form-section">
+            <h2>Breast Cancer Classification Form</h2>
+            <form action="{{url_for('classify')}}" method="POST">
+                <label for="radius_mean">Radius Mean:</label>
+                <input type="number" id="radius_mean" name="radius_mean" step="any" required><br><br>
 
-        <label for="texture_mean">Texture Mean:</label>
-        <input type="number" id="texture_mean" name="texture_mean" step="any" required><br><br>
+                <label for="texture_mean">Texture Mean:</label>
+                <input type="number" id="texture_mean" name="texture_mean" step="any" required><br><br>
 
-        <label for="perimeter_mean">Perimeter Mean:</label>
-        <input type="number" id="perimeter_mean" name="perimeter_mean" step="any" required><br><br>
+                <label for="perimeter_mean">Perimeter Mean:</label>
+                <input type="number" id="perimeter_mean" name="perimeter_mean" step="any" required><br><br>
 
-        <label for="area_mean">Area Mean:</label>
-        <input type="number" id="area_mean" name="area_mean" step="any" required><br><br>
+                <label for="area_mean">Area Mean:</label>
+                <input type="number" id="area_mean" name="area_mean" step="any" required><br><br>
 
-        <label for="smoothness_mean">Smoothness Mean:</label>
-        <input type="number" id="smoothness_mean" name="smoothness_mean" step="any" required><br><br>
+                <label for="smoothness_mean">Smoothness Mean:</label>
+                <input type="number" id="smoothness_mean" name="smoothness_mean" step="any" required><br><br>
 
-        <label for="compactness_mean">Compactness Mean:</label>
-        <input type="number" id="compactness_mean" name="compactness_mean" step="any" required><br><br>
+                <label for="compactness_mean">Compactness Mean:</label>
+                <input type="number" id="compactness_mean" name="compactness_mean" step="any" required><br><br>
 
-        <label for="concavity_mean">Concavity Mean:</label>
-        <input type="number" id="concavity_mean" name="concavity_mean" step="any" required><br><br>
+                <label for="concavity_mean">Concavity Mean:</label>
+                <input type="number" id="concavity_mean" name="concavity_mean" step="any" required><br><br>
 
-        <label for="concave_points_mean">Concave Points Mean:</label>
-        <input type="number" id="concave_points_mean" name="concave_points_mean" step="any" required><br><br>
+                <label for="concave_points_mean">Concave Points Mean:</label>
+                <input type="number" id="concave_points_mean" name="concave_points_mean" step="any" required><br><br>
 
-        <label for="symmetry_mean">Symmetry Mean:</label>
-        <input type="number" id="symmetry_mean" name="symmetry_mean" step="any" required><br><br>
+                <label for="symmetry_mean">Symmetry Mean:</label>
+                <input type="number" id="symmetry_mean" name="symmetry_mean" step="any" required><br><br>
 
-        <label for="fractal_dimension_mean">Fractal Dimension Mean:</label>
-        <input type="number" id="fractal_dimension_mean" name="fractal_dimension_mean" step="any" required><br><br>
+                <label for="fractal_dimension_mean">Fractal Dimension Mean:</label>
+                <input type="number" id="fractal_dimension_mean" name="fractal_dimension_mean" step="any" required><br><br>
 
-        <label for="radius_se">Radius SE:</label>
-        <input type="number" id="radius_se" name="radius_se" step="any" required><br><br>
+                <label for="radius_se">Radius SE:</label>
+                <input type="number" id="radius_se" name="radius_se" step="any" required><br><br>
 
-        <label for="texture_se">Texture SE:</label>
-        <input type="number" id="texture_se" name="texture_se" step="any" required><br><br>
+                <label for="texture_se">Texture SE:</label>
+                <input type="number" id="texture_se" name="texture_se" step="any" required><br><br>
 
-        <label for="perimeter_se">Perimeter SE:</label>
-        <input type="number" id="perimeter_se" name="perimeter_se" step="any" required><br><br>
+                <label for="perimeter_se">Perimeter SE:</label>
+                <input type="number" id="perimeter_se" name="perimeter_se" step="any" required><br><br>
 
-        <label for="area_se">Area SE:</label>
-        <input type="number" id="area_se" name="area_se" step="any" required><br><br>
+                <label for="area_se">Area SE:</label>
+                <input type="number" id="area_se" name="area_se" step="any" required><br><br>
 
-        <label for="smoothness_se">Smoothness SE:</label>
-        <input type="number" id="smoothness_se" name="smoothness_se" step="any" required><br><br>
+                <label for="smoothness_se">Smoothness SE:</label>
+                <input type="number" id="smoothness_se" name="smoothness_se" step="any" required><br><br>
 
-        <label for="compactness_se">Compactness SE:</label>
-        <input type="number" id="compactness_se" name="compactness_se" step="any" required><br><br>
+                <label for="compactness_se">Compactness SE:</label>
+                <input type="number" id="compactness_se" name="compactness_se" step="any" required><br><br>
 
-        <label for="concavity_se">Concavity SE:</label>
-        <input type="number" id="concavity_se" name="concavity_se" step="any" required><br><br>
+                <label for="concavity_se">Concavity SE:</label>
+                <input type="number" id="concavity_se" name="concavity_se" step="any" required><br><br>
 
-        <label for="concave_points_se">Concave Points SE:</label>
-        <input type="number" id="concave_points_se" name="concave_points_se" step="any" required><br><br>
+                <label for="concave_points_se">Concave Points SE:</label>
+                <input type="number" id="concave_points_se" name="concave_points_se" step="any" required><br><br>
 
-        <label for="symmetry_se">Symmetry SE:</label>
-        <input type="number" id="symmetry_se" name="symmetry_se" step="any" required><br><br>
+                <label for="symmetry_se">Symmetry SE:</label>
+                <input type="number" id="symmetry_se" name="symmetry_se" step="any" required><br><br>
 
-        <label for="fractal_dimension_se">Fractal Dimension SE:</label>
-        <input type="number" id="fractal_dimension_se" name="fractal_dimension_se" step="any" required><br><br>
+                <label for="fractal_dimension_se">Fractal Dimension SE:</label>
+                <input type="number" id="fractal_dimension_se" name="fractal_dimension_se" step="any" required><br><br>
 
-        <label for="radius_worst">Radius Worst:</label>
-        <input type="number" id="radius_worst" name="radius_worst" step="any" required><br><br>
+                <label for="radius_worst">Radius Worst:</label>
+                <input type="number" id="radius_worst" name="radius_worst" step="any" required><br><br>
 
-        <label for="texture_worst">Texture Worst:</label>
-        <input type="number" id="texture_worst" name="texture_worst" step="any" required><br><br>
+                <label for="texture_worst">Texture Worst:</label>
+                <input type="number" id="texture_worst" name="texture_worst" step="any" required><br><br>
 
-        <label for="perimeter_worst">Perimeter Worst:</label>
-        <input type="number" id="perimeter_worst" name="perimeter_worst" step="any" required><br><br>
+                <label for="perimeter_worst">Perimeter Worst:</label>
+                <input type="number" id="perimeter_worst" name="perimeter_worst" step="any" required><br><br>
 
-        <label for="area_worst">Area Worst:</label>
-        <input type="number" id="area_worst" name="area_worst" step="any" required><br><br>
+                <label for="area_worst">Area Worst:</label>
+                <input type="number" id="area_worst" name="area_worst" step="any" required><br><br>
 
-        <label for="smoothness_worst">Smoothness Worst:</label>
-        <input type="number" id="smoothness_worst" name="smoothness_worst" step="any" required><br><br>
+                <label for="smoothness_worst">Smoothness Worst:</label>
+                <input type="number" id="smoothness_worst" name="smoothness_worst" step="any" required><br><br>
 
-        <label for="compactness_worst">Compactness Worst:</label>
-        <input type="number" id="compactness_worst" name="compactness_worst" step="any" required><br><br>
+                <label for="compactness_worst">Compactness Worst:</label>
+                <input type="number" id="compactness_worst" name="compactness_worst" step="any" required><br><br>
 
-        <label for="concavity_worst">Concavity Worst:</label>
-        <input type="number" id="concavity_worst" name="concavity_worst" step="any" required><br><br>
+                <label for="concavity_worst">Concavity Worst:</label>
+                <input type="number" id="concavity_worst" name="concavity_worst" step="any" required><br><br>
 
-        <label for="concave_points_worst">Concave Points Worst:</label>
-        <input type="number" id="concave_points_worst" name="concave_points_worst" step="any" required><br><br>
+                <label for="concave_points_worst">Concave Points Worst:</label>
+                <input type="number" id="concave_points_worst" name="concave_points_worst" step="any" required><br><br>
 
-        <label for="symmetry_worst">Symmetry Worst:</label>
-        <input type="number" id="symmetry_worst" name="symmetry_worst" step="any" required><br><br>
+                <label for="symmetry_worst">Symmetry Worst:</label>
+                <input type="number" id="symmetry_worst" name="symmetry_worst" step="any" required><br><br>
 
-        <label for="fractal_dimension_worst">Fractal Dimension Worst:</label>
-        <input type="number" id="fractal_dimension_worst" name="fractal_dimension_worst" step="any" required><br><br>
+                <label for="fractal_dimension_worst">Fractal Dimension Worst:</label>
+                <input type="number" id="fractal_dimension_worst" name="fractal_dimension_worst" step="any" required><br><br>
 
-        <button type="submit">Classify</button>
-    </form>
-</div>
-<h1>
-    {{prediction_text}}
-</h1>
+                <button type="submit">Classify</button>
+            </form>
+        </div>
+        
+        <div class="result">
+            {{prediction_text}}
+        </div>
+        
+        <footer>
+            <p>This tool is intended for educational purposes only. Always consult with healthcare professionals for medical advice.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('open-form-btn').addEventListener('click', function() {
+            var formSection = document.getElementById('form-section');
+            if (formSection.style.display === 'block') {
+                formSection.style.display = 'none';
+                this.textContent = 'Classify Yours';
+            } else {
+                formSection.style.display = 'block';
+                this.textContent = 'Hide Form';
+            }
+        });
+    </script>
 </body>
 </html>
